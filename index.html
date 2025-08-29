@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Selector & File Upload</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            display: flex;
+            gap: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .box {
+            background: linear-gradient(145deg, #ffffff, #f5f5f5);
+            border-radius: 25px;
+            padding: 30px;
+            flex: 1;
+            min-width: 300px;
+            box-shadow: 
+                20px 20px 60px #d0d0d0,
+                -20px -20px 60px #ffffff,
+                inset 0px 0px 0px transparent;
+            transition: all 0.3s ease;
+        }
+
+        .box:hover {
+            box-shadow: 
+                15px 15px 45px #d0d0d0,
+                -15px -15px 45px #ffffff,
+                inset 5px 5px 10px #e0e0e0,
+                inset -5px -5px 10px #ffffff;
+        }
+
+        .box h2 {
+            color: #1976d2;
+            margin-bottom: 25px;
+            font-weight: 600;
+            text-align: center;
+            font-size: 1.5rem;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.9);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #e3f2fd, #bbdefb);
+            box-shadow: 
+                8px 8px 16px #90caf9,
+                -8px -8px 16px #ffffff;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .checkbox-item:hover {
+            box-shadow: 
+                inset 4px 4px 8px #64b5f6,
+                inset -4px -4px 8px #ffffff;
+            transform: scale(1.02);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            appearance: none;
+            background: linear-gradient(145deg, #f0f0f0, #cacaca);
+            box-shadow: 
+                inset 4px 4px 8px #bebebe,
+                inset -4px -4px 8px #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            pointer-events: none;
+        }
+
+        .checkbox-item input[type="checkbox"]:checked {
+            background: linear-gradient(145deg, #2196f3, #1976d2);
+            box-shadow: 
+                inset 2px 2px 4px #1565c0,
+                inset -2px -2px 4px #42a5f5;
+        }
+
+        .checkbox-item input[type="checkbox"]:checked::after {
+            content: '✨';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+        }
+
+        .checkbox-item label {
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #1976d2;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.9);
+            pointer-events: none;
+            flex: 1;
+        }
+
+        .image-display {
+            margin-top: 25px;
+            text-align: center;
+            padding: 20px;
+            border-radius: 20px;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            box-shadow: 
+                inset 8px 8px 16px #d0d0d0,
+                inset -8px -8px 16px #ffffff;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-display img {
+            max-width: 180px;
+            max-height: 180px;
+            border-radius: 50%;
+            box-shadow: 
+                15px 15px 30px #90caf9,
+                -15px -15px 30px #ffffff;
+            transition: all 0.3s ease;
+            border: 3px solid #2196f3;
+        }
+
+        .image-display img:hover {
+            transform: scale(1.05);
+            box-shadow: 
+                20px 20px 40px #90caf9,
+                -20px -20px 40px #ffffff;
+        }
+
+        .image-display p {
+            margin-top: 15px;
+            font-weight: 600;
+            color: #1976d2;
+            font-size: 1.1rem;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.9);
+        }
+
+        .file-upload {
+            margin-bottom: 25px;
+        }
+
+        .file-input {
+            margin-bottom: 15px;
+        }
+
+        .file-input input[type="file"] {
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            box-shadow: 
+                inset 8px 8px 16px #d0d0d0,
+                inset -8px -8px 16px #ffffff;
+            width: 100%;
+            font-size: 16px;
+            color: #1976d2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-input input[type="file"]:hover {
+            box-shadow: 
+                inset 6px 6px 12px #d0d0d0,
+                inset -6px -6px 12px #ffffff;
+        }
+
+        .file-input input[type="file"]::file-selector-button {
+            background: linear-gradient(145deg, #2196f3, #1976d2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-right: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 
+                4px 4px 8px #1565c0,
+                -4px -4px 8px #42a5f5;
+            transition: all 0.3s ease;
+        }
+
+        .file-input input[type="file"]::file-selector-button:hover {
+            transform: scale(1.05);
+            box-shadow: 
+                6px 6px 12px #1565c0,
+                -6px -6px 12px #42a5f5;
+        }
+
+        .file-info {
+            background: linear-gradient(145deg, #e3f2fd, #bbdefb);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 15px;
+            display: none;
+            box-shadow: 
+                8px 8px 16px #90caf9,
+                -8px -8px 16px #ffffff;
+        }
+
+        .file-info h3 {
+            margin: 0 0 15px 0;
+            color: #1976d2;
+            font-size: 1.2rem;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        }
+
+        .file-detail {
+            margin: 8px 0;
+            font-size: 16px;
+            color: #1976d2;
+            background: rgba(255,255,255,0.5);
+            padding: 8px 12px;
+            border-radius: 8px;
+            box-shadow: 
+                inset 2px 2px 4px rgba(33,150,243,0.1),
+                inset -2px -2px 4px rgba(255,255,255,0.8);
+        }
+
+        .file-detail strong {
+            color: #0d47a1;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .box {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Animal Selection Box -->
+        <div class="box">
+            <h2>Select Animal</h2>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="cat" name="animal" value="cat">
+                    <label for="cat">Cat</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="dog" name="animal" value="dog">
+                    <label for="dog">Dog</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="elephant" name="animal" value="elephant">
+                    <label for="elephant">Elephant</label>
+                </div>
+            </div>
+            <div class="image-display" id="imageDisplay"></div>
+        </div>
+
+        <!-- File Upload Box -->
+        <div class="box">
+            <h2>File Upload</h2>
+            <div class="file-upload">
+                <div class="file-input">
+                    <input type="file" id="fileInput" accept="*/*">
+                </div>
+                <div class="file-info" id="fileInfo">
+                    <h3>File Details:</h3>
+                    <div class="file-detail">
+                        <strong>Name:</strong> <span id="fileName"></span>
+                    </div>
+                    <div class="file-detail">
+                        <strong>Size:</strong> <span id="fileSize"></span>
+                    </div>
+                    <div class="file-detail">
+                        <strong>Type:</strong> <span id="fileType"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Animal images with actual photos
+        const animalImages = {
+            cat: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&h=200',
+            dog: 'https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&h=200',
+            // elephant: 'https://images.unsplash.com/photo-1564760055775-d63b17a55c44?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&h=200'
+            elephant: 'https://akns-images.eonline.com/eol_images/Entire_Site/201438/rs_1024x759-140408154504-1024.baby-elephant-grass.ls.4814.jpg?&fit=crop&w=200&h=200'
+        };
+
+        // Get all checkboxes
+        const checkboxes = document.querySelectorAll('input[name="animal"]');
+        const imageDisplay = document.getElementById('imageDisplay');
+
+        // Function to handle animal selection
+        function selectAnimal(selectedCheckbox) {
+            // Uncheck other checkboxes (radio-like behavior)
+            checkboxes.forEach(cb => {
+                cb.checked = false;
+            });
+            
+            // Check the selected one
+            selectedCheckbox.checked = true;
+            
+            // Display image
+            const animal = selectedCheckbox.value;
+            imageDisplay.innerHTML = `
+                <img src="${animalImages[animal]}" alt="${animal}" />
+                <p>Selected: ${animal.charAt(0).toUpperCase() + animal.slice(1)}</p>
+            `;
+            
+            // Store selection locally
+            localStorage.setItem('selectedAnimal', animal);
+        }
+
+        // Add event listeners to checkbox items (entire button clickable)
+        document.querySelectorAll('.checkbox-item').forEach((item, index) => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const checkbox = this.querySelector('input[type="checkbox"]');
+                
+                // Toggle behavior: if already selected, deselect
+                if (checkbox.checked) {
+                    checkbox.checked = false;
+                    imageDisplay.innerHTML = '';
+                    localStorage.removeItem('selectedAnimal');
+                } else {
+                    selectAnimal(checkbox);
+                }
+            });
+        });
+
+        // File upload functionality
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const fileType = document.getElementById('fileType');
+
+        fileInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            
+            if (file) {
+                // Format file size
+                const formatFileSize = (bytes) => {
+                    if (bytes === 0) return '0 Bytes';
+                    const k = 1024;
+                    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+                };
+
+                // Display file information
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileType.textContent = file.type || 'Unknown';
+                
+                fileInfo.style.display = 'block';
+            } else {
+                fileInfo.style.display = 'none';
+            }
+        });
+
+        // Load previously selected animal on page load
+        window.addEventListener('load', function() {
+            const savedAnimal = localStorage.getItem('selectedAnimal');
+            if (savedAnimal) {
+                const checkbox = document.getElementById(savedAnimal);
+                if (checkbox) {
+                    selectAnimal(checkbox);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
