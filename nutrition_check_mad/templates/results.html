@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+  <title>Results for {{ query }}</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      background: #fff;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    a {
+      text-decoration: none;
+      color: #007BFF;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    p {
+      color: #666;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Results for "{{ query }}"</h1>
+    {% if results %}
+      <ul>
+      {% for r in results %}
+        <li>
+          <a href="/product/{{ r.code }}">{{ r.product_name or "Unnamed product" }}</a>
+          {% if r.nutrition_grades %}
+            (NutriScore: {{ r.nutrition_grades|upper }})
+          {% endif %}
+        </li>
+      {% endfor %}
+      </ul>
+    {% else %}
+      <p>No results found.</p>
+    {% endif %}
+    <a href="/">Search again</a>
+  </div>
+</body>
+</html>
