@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethanol Blend Impact Analyzer - Indian Vehicles</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+        }
+
+        .results-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #27ae60;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .result-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .impact-level {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .low-impact { background: #d4edda; color: #155724; }
+        .medium-impact { background: #fff3cd; color: #856404; }
+        .high-impact { background: #f8d7da; color: #721c24; }
+
+        .recommendations {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .ethanol-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .ethanol-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e1e8ed;
+        }
+
+        .ethanol-card.selected {
+            border-color: #3498db;
+            background: #ebf3fd;
+        }
+
+        .vehicle-type-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 10px 0;
+        }
+
+        .vehicle-type-option {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 3px solid #e1e8ed;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .vehicle-type-option:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .vehicle-type-option.selected {
+            border-color: #3498db;
+            background: linear-gradient(135deg, #ebf3fd, #f8fbff);
+            transform: scale(1.02);
+        }
+
+        .vehicle-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .vehicle-type-option h4 {
+            margin: 10px 0 5px 0;
+            color: #2c3e50;
+            font-size: 1.2em;
+        }
+
+        .vehicle-type-option p {
+            margin: 0;
+            color: #7f8c8d;
+            font-size: 0.9em;
+            line-height: 1.3;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e1e8ed;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #27ae60);
+            transition: width 0.3s ease;
+        }
+        
+        .ai-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .ai-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .ai-button.ai-enabled {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+        
+        .ai-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .ai-modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 500px;
+        }
+        
+        .ai-modal h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .api-key-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            margin: 15px 0;
+            box-sizing: border-box;
+        }
+        
+        .api-key-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .modal-btn.save {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .modal-btn.cancel {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .ai-only {
+            display: none;
+        }
+        
+        .ai-benefits {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #3498db;
+        }
+        
+        .ai-benefits ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .ai-benefits li {
+            margin: 5px 0;
+        }
+        
+        .faq-button {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: white;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+        
+        .faq-button:hover {
+            border-color: #3498db;
+            background: #f8fbff;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .faq-button:active {
+            transform: translateY(0);
+        }
+        
+        .ai-thinking {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #f0f8ff;
+            border-radius: 6px;
+            font-style: italic;
+            color: #667eea;
+            border-left: 3px solid #667eea;
+        }
+        
+        .ai-response-content {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #27ae60;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI-Powered Ethanol Analyzer</h1>
+            <p>Get comprehensive ethanol blend analysis using Google Gemini AI</p>
+            <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 8px; font-size: 14px;">
+                ⚡ Powered by Google Gemini AI • Supports ALL vehicle brands & models • Instant expert analysis
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="form-section">
+                <h2>Vehicle Details</h2>
+                
+                <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #27ae60;">
+                    <strong>🤖 AI-Powered Analysis:</strong> Enter any vehicle brand/model - Gemini AI will provide expert analysis for ALL vehicles, including latest models and variants!
+                </div>
+
+                <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #f39c12;">
+                    <strong>🔑 API Key Required:</strong> You'll need a free Google Gemini API key to get AI-powered analysis.
+                    <a href="https://aistudio.google.com/" target="_blank" style="color: #3498db; text-decoration: none;">Get your free API key here →</a>
+                </div>
+
+                <form id="vehicleForm">
+                    <div class="form-group">
+                        <label for="geminiApiKey">🔑 Google Gemini API Key</label>
+                        <input type="password" id="geminiApiKey" placeholder="AIza..." required 
+                               style="font-family: monospace; letter-spacing: 1px;">
+                        <small style="color: #666; display: block; margin-top: 5px;">
+                            Get your free API key from <a href="https://aistudio.google.com/" target="_blank" style="color: #3498db;">Google AI Studio</a>
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vehicleName">🚗 Vehicle Name</label>
+                        <input type="text" id="vehicleName" placeholder="e.g., Maruti Swift, Honda City, Hero Splendor, TVS Activa..." required>
+                        <small style="color: #666; display: block; margin-top: 5px;">
+                            Enter your complete vehicle name (Brand + Model) - AI recognizes all vehicles
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="year">Manufacturing Year</label>
+                        <select id="year" required>
+                            <option value="">Select Year</option>
+                        </select>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="state">State/UT</label>
+                        <select id="state" required>
+                            <option value="">Select Your State</option>
+                            <option value="andhra_pradesh">Andhra Pradesh</option>
+                            <option value="assam">Assam</option>
+                            <option value="bihar">Bihar</option>
+                            <option value="chhattisgarh">Chhattisgarh</option>
+                            <option value="delhi">Delhi</option>
+                            <option value="goa">Goa</option>
+                            <option value="gujarat">Gujarat</option>
+                            <option value="haryana">Haryana</option>
+                            <option value="himachal_pradesh">Himachal Pradesh</option>
+                            <option value="jharkhand">Jharkhand</option>
+                            <option value="karnataka">Karnataka</option>
+                            <option value="kerala">Kerala</option>
+                            <option value="madhya_pradesh">Madhya Pradesh</option>
+                            <option value="maharashtra">Maharashtra</option>
+                            <option value="manipur">Manipur</option>
+                            <option value="meghalaya">Meghalaya</option>
+                            <option value="mizoram">Mizoram</option>
+                            <option value="nagaland">Nagaland</option>
+                            <option value="odisha">Odisha</option>
+                            <option value="punjab">Punjab</option>
+                            <option value="rajasthan">Rajasthan</option>
+                            <option value="tamil_nadu">Tamil Nadu</option>
+                            <option value="telangana">Telangana</option>
+                            <option value="tripura">Tripura</option>
+                            <option value="uttar_pradesh">Uttar Pradesh</option>
+                            <option value="uttarakhand">Uttarakhand</option>
+                            <option value="west_bengal">West Bengal</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="usage">Usage Pattern</label>
+                        <select id="usage" required>
+                            <option value="">Select Usage</option>
+                            <option value="city">City driving (mostly traffic)</option>
+                            <option value="highway">Highway driving (long distances)</option>
+                            <option value="mixed">Mixed (city + highway)</option>
+                            <option value="commercial">Commercial use (daily heavy use)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="monthlySpend">Monthly Fuel Spending (₹)</label>
+                        <select id="monthlySpend" required>
+                            <option value="">Select Monthly Spend</option>
+                            <option value="1000">₹1,000 - ₹2,000</option>
+                            <option value="2500">₹2,000 - ₹3,000</option>
+                            <option value="3500">₹3,000 - ₹4,000</option>
+                            <option value="4500">₹4,000 - ₹5,000</option>
+                            <option value="6000">₹5,000 - ₹7,000</option>
+                            <option value="8500">₹7,000 - ₹10,000</option>
+                            <option value="12000">₹10,000+</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fuelProvider">Preferred Fuel Provider</label>
+                        <select id="fuelProvider" required>
+                            <option value="">Select Fuel Provider</option>
+                            <option value="ioc">Indian Oil Corporation (IOCL)</option>
+                            <option value="bpcl">Bharat Petroleum Corporation (BPCL)</option>
+                            <option value="hpcl">Hindustan Petroleum Corporation (HPCL)</option>
+                            <option value="reliance">Reliance Petroleum</option>
+                            <option value="shell">Shell India</option>
+                            <option value="essar">Essar Oil</option>
+                            <option value="bp">BP (Jio-bp)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ethanol Blend Analysis</label>
+                        <div class="ethanol-info">
+                            <div class="ethanol-card" data-blend="e10">
+                                <h4>E10</h4>
+                                <p>10% Ethanol<br><small>Currently mandatory</small></p>
+                            </div>
+                            <div class="ethanol-card" data-blend="e15">
+                                <h4>E15</h4>
+                                <p>15% Ethanol<br><small>Pilot phase</small></p>
+                            </div>
+                            <div class="ethanol-card" data-blend="e20">
+                                <h4>E20</h4>
+                                <p>20% Ethanol<br><small>Future rollout</small></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">Analyze Impact</button>
+                </form>
+            </div>
+
+            <div class="results-section">
+                <h2>Analysis Results</h2>
+                
+                <div id="defaultMessage">
+                    <p>Fill in your vehicle details to see the impact analysis of ethanol blends on your vehicle.</p>
+                    
+                    <div class="result-card">
+                        <h3>About Ethanol Blends in India</h3>
+                        <p>India has implemented an ethanol blending program to reduce oil imports and promote cleaner fuels:</p>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li><strong>E10:</strong> Mandatory nationwide since 2022</li>
+                            <li><strong>E15:</strong> Pilot project in select states</li>
+                            <li><strong>E20:</strong> Target by 2025-2026</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="loadingMessage" class="hidden">
+                    <div class="loading">
+                        <h3>🤖 Gemini AI is analyzing your vehicle...</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <p>AI is generating comprehensive ethanol blend analysis...</p>
+                        <p style="font-size: 12px; color: #666; margin-top: 10px;">This may take 10-20 seconds for detailed AI insights</p>
+                    </div>
+                </div>
+
+                <div id="results" class="hidden">
+                    <!-- Results will be populated here -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Gemini-powered JavaScript implementation
+        let selectedEthanolBlend = '';
+        let currentAnalysisData = null;
+        let geminiApiKey = null;
+        
+        // API endpoint - change this for production deployment
+        const API_BASE = window.location.hostname === 'localhost' ? 
+            'http://localhost:8001/api' : 
+            `http://${window.location.hostname}:8001/api`;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            populateYears();
+        });
+
+        function setupEventListeners() {
+            // Ethanol blend selection
+            document.querySelectorAll('.ethanol-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    selectEthanolBlend(e);
+                });
+            });
+
+            // Form submission
+            document.getElementById('vehicleForm').addEventListener('submit', handleFormSubmit);
+        }
+
+        function selectEthanolBlend(e) {
+            document.querySelectorAll('.ethanol-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            e.currentTarget.classList.add('selected');
+            selectedEthanolBlend = e.currentTarget.dataset.blend;
+        }
+
+        function populateYears() {
+            const yearSelect = document.getElementById('year');
+            const currentYear = new Date().getFullYear();
+            
+            for (let year = currentYear; year >= 1990; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            }
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            console.log('Gemini AI analysis started');
+            
+            // Validate API key
+            const apiKey = document.getElementById('geminiApiKey').value.trim();
+            if (!apiKey) {
+                alert('Please enter your Gemini API key');
+                document.getElementById('geminiApiKey').focus();
+                return;
+            }
+            
+            if (!apiKey.startsWith('AIza')) {
+                alert('Please enter a valid Gemini API key (starts with "AIza")');
+                document.getElementById('geminiApiKey').focus();
+                return;
+            }
+
+            if (!selectedEthanolBlend) {
+                alert('Please select an ethanol blend to analyze');
+                return;
+            }
+
+            const formData = {
+                vehicle_name: document.getElementById('vehicleName').value.trim(),
+                year: parseInt(document.getElementById('year').value),
+                state: document.getElementById('state').value,
+                monthly_spend: parseInt(document.getElementById('monthlySpend').value),
+                ethanol_blend: selectedEthanolBlend,
+                gemini_api_key: apiKey
+            };
+
+            // Validate required fields
+            const requiredFields = [
+                { field: 'vehicle_name', name: 'vehicle name' },
+                { field: 'year', name: 'manufacturing year' },
+                { field: 'state', name: 'state' },
+                { field: 'monthly_spend', name: 'monthly fuel spending' },
+                { field: 'ethanol_blend', name: 'ethanol blend' }
+            ];
+            
+            for (let {field, name} of requiredFields) {
+                if (!formData[field]) {
+                    alert(`Please fill in the ${name}`);
+                    return;
+                }
+            }
+
+            showLoading();
+            
+            try {
+                console.log('Sending request to Gemini API...');
+                const response = await fetch(`${API_BASE}/analyze`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                console.log('Gemini API response:', result);
+                
+                if (result.success) {
+                    currentAnalysisData = result.data;
+                    geminiApiKey = apiKey; // Store for follow-up questions
+                    displayResults(result.data);
+                } else {
+                    throw new Error(result.detail || 'Analysis failed');
+                }
+            } catch (error) {
+                console.error('Analysis error:', error);
+                showError('Analysis failed: ' + error.message);
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('defaultMessage').classList.add('hidden');
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('loadingMessage').classList.remove('hidden');
+            
+            // Animate progress bar
+            const progressFill = document.querySelector('.progress-fill');
+            let width = 0;
+            const interval = setInterval(() => {
+                width += 2;
+                progressFill.style.width = width + '%';
+                if (width >= 100) {
+                    clearInterval(interval);
+                }
+            }, 30);
+        }
+
+        function displayResults(data) {
+            document.getElementById('loadingMessage').classList.add('hidden');
+            
+            const resultsDiv = document.getElementById('results');
+            const summary = data.analysis.summary;
+            
+            // Extract compatibility rating from summary
+            let compatibilityRating = 'Good';
+            let ratingColor = '#27ae60';
+            let ratingIcon = '✅';
+            
+            if (summary.includes('EXCELLENT')) {
+                compatibilityRating = 'Excellent';
+                ratingColor = '#2ecc71';
+                ratingIcon = '🟢';
+            } else if (summary.includes('FAIR') || summary.includes('CAUTION')) {
+                compatibilityRating = 'Fair';
+                ratingColor = '#f39c12';
+                ratingIcon = '🟡';
+            } else if (summary.includes('POOR') || summary.includes('NOT RECOMMENDED')) {
+                compatibilityRating = 'Poor';
+                ratingColor = '#e74c3c';
+                ratingIcon = '🔴';
+            }
+            
+            // Extract key metrics from summary
+            let costSavings = '';
+            let fuelEfficiency = '';
+            let performance = '';
+            
+            const costMatch = summary.match(/₹(\d+)\s+savings?\)/);
+            if (costMatch) {
+                costSavings = `₹${costMatch[1]} monthly savings`;
+            }
+            
+            const efficiencyMatch = summary.match(/Fuel efficiency:([^•\n]*)/);
+            if (efficiencyMatch) {
+                fuelEfficiency = efficiencyMatch[1].trim();
+            }
+            
+            const performanceMatch = summary.match(/Power\/torque:([^•\n]*)/);
+            if (performanceMatch) {
+                performance = performanceMatch[1].trim();
+            }
+            
+            resultsDiv.innerHTML = `
+                <div class="result-card" style="border-left: 5px solid ${ratingColor};">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="margin: 0; color: #2c3e50;">
+                            🚗 ${data.vehicle_info.brand} ${data.vehicle_info.model} (${data.vehicle_info.year})
+                        </h3>
+                        <div style="text-align: right;">
+                            <div style="display: inline-block; padding: 8px 16px; background: ${ratingColor}; color: white; border-radius: 20px; font-weight: bold; font-size: 14px;">
+                                ${ratingIcon} ${compatibilityRating}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;">
+                        ${costSavings ? `
+                        <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; margin-bottom: 5px;">💰</div>
+                            <div style="font-weight: bold; color: #27ae60;">${costSavings}</div>
+                            <div style="font-size: 12px; color: #666;">Cost Impact</div>
+                        </div>` : ''}
+                        
+                        ${fuelEfficiency ? `
+                        <div style="background: #ebf3fd; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; margin-bottom: 5px;">⛽</div>
+                            <div style="font-weight: bold; color: #3498db;">${fuelEfficiency}</div>
+                            <div style="font-size: 12px; color: #666;">Fuel Efficiency</div>
+                        </div>` : ''}
+                        
+                        ${performance ? `
+                        <div style="background: #fff3cd; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; margin-bottom: 5px;">🔧</div>
+                            <div style="font-weight: bold; color: #856404;">${performance}</div>
+                            <div style="font-size: 12px; color: #666;">Performance</div>
+                        </div>` : ''}
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; margin-bottom: 5px;">🏭</div>
+                            <div style="font-weight: bold; color: #6c757d;">${data.vehicle_info.technology}</div>
+                            <div style="font-size: 12px; color: #666;">${data.vehicle_info.displacement}cc Engine</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                        <h4 style="color: #2c3e50; margin-bottom: 15px; display: flex; align-items: center; cursor: pointer;" onclick="toggleDetailedAnalysis()">
+                            <span style="margin-right: 10px;">📋</span>
+                            Detailed AI Analysis
+                            <span id="detailToggle" style="margin-left: auto; font-size: 18px;">▼</span>
+                        </h4>
+                        <div id="detailedAnalysisContent" style="display: block;">
+                            ${formatDetailedAnalysis(summary)}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 8px; text-align: center;">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                            <span style="font-size: 20px;">🤖</span>
+                            <div>
+                                <div style="font-weight: bold;">Gemini AI Analysis Complete</div>
+                                <div style="font-size: 12px; opacity: 0.9;">Expert-level analysis powered by Google Gemini AI</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding: 20px; background: #f0f8ff; border-radius: 8px; border-left: 4px solid #3498db;">
+                        <h4 style="color: #2c3e50; margin-bottom: 15px; display: flex; align-items: center;">
+                            <span style="margin-right: 10px;">💬</span>
+                            Ask Follow-up Questions
+                        </h4>
+                        <div style="display: flex; gap: 10px; align-items: flex-start;">
+                            <input type="text" id="followupQuestion" placeholder="e.g., Will this affect my engine warranty?" 
+                                   style="flex: 1; padding: 12px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                            <button onclick="askFollowup()" style="padding: 12px 20px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">
+                                Ask AI
+                            </button>
+                        </div>
+                        <div id="followupResponse" style="margin-top: 15px; padding: 15px; background: white; border-radius: 6px; display: none;">
+                            <!-- Follow-up responses will appear here -->
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            resultsDiv.classList.remove('hidden');
+        }
+
+        function showError(message) {
+            document.getElementById('loadingMessage').classList.add('hidden');
+            document.getElementById('results').innerHTML = `
+                <div class="result-card" style="border-left-color: #e74c3c;">
+                    <h3 style="color: #e74c3c;">❌ Analysis Error</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+            document.getElementById('results').classList.remove('hidden');
+        }
+
+        async function askFollowup() {
+            const questionInput = document.getElementById('followupQuestion');
+            const responseDiv = document.getElementById('followupResponse');
+            const question = questionInput.value.trim();
+            
+            if (!question) {
+                alert('Please enter a question');
+                return;
+            }
+            
+            if (!geminiApiKey) {
+                alert('API key not available. Please run a new analysis first.');
+                return;
+            }
+            
+            responseDiv.style.display = 'block';
+            responseDiv.innerHTML = '<div style="color: #3498db; font-style: italic;">🤖 AI is thinking...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        question: question,
+                        gemini_api_key: geminiApiKey,
+                        context: currentAnalysisData
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    responseDiv.innerHTML = `
+                        <div style="margin-bottom: 10px; font-weight: 600; color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 5px;">
+                            Q: ${question}
+                        </div>
+                        <div style="line-height: 1.6; color: #2c3e50; white-space: pre-line;">
+                            ${result.data.answer}
+                        </div>
+                    `;
+                    questionInput.value = ''; // Clear the input
+                } else {
+                    throw new Error(result.detail || 'Failed to get AI response');
+                }
+            } catch (error) {
+                responseDiv.innerHTML = `
+                    <div style="color: #e74c3c; padding: 10px; border-left: 3px solid #e74c3c; background: #ffeaea;">
+                        ❌ Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function formatDetailedAnalysis(summary) {
+            // Parse and format the analysis for better readability
+            const sections = summary.split('**');
+            let formattedHtml = '';
+            
+            for (let i = 0; i < sections.length; i++) {
+                const section = sections[i].trim();
+                if (!section) continue;
+                
+                if (section.includes(':') && !section.includes('\n')) {
+                    // This is a section header
+                    const headerText = section.replace(':', '');
+                    const icons = {
+                        'COMPATIBILITY RATING': '🎯',
+                        'COST IMPACT': '💰',
+                        'PERFORMANCE IMPACT': '⚡',
+                        'TECHNICAL COMPATIBILITY': '🔧',
+                        'REGIONAL CONSIDERATIONS': '🗺️',
+                        'KEY RECOMMENDATIONS': '💡',
+                        'PROS & CONS': '⚖️',
+                        'BOTTOM LINE': '🎯'
+                    };
+                    const icon = icons[headerText] || '📌';
+                    formattedHtml += `
+                        <div style="margin: 20px 0 10px 0; padding: 10px; background: white; border-radius: 6px; border-left: 4px solid #3498db;">
+                            <h5 style="color: #3498db; margin: 0; font-size: 16px; display: flex; align-items: center;">
+                                <span style="margin-right: 8px;">${icon}</span>
+                                ${headerText}
+                            </h5>
+                        </div>
+                    `;
+                } else {
+                    // This is content
+                    const lines = section.split('\n').filter(line => line.trim());
+                    for (const line of lines) {
+                        const trimmedLine = line.trim();
+                        if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('• ')) {
+                            // Bullet points
+                            formattedHtml += `
+                                <div style="margin: 8px 0; padding: 8px 15px; background: white; border-radius: 4px; border-left: 2px solid #27ae60;">
+                                    ${trimmedLine.substring(2)}
+                                </div>
+                            `;
+                        } else if (trimmedLine.startsWith('✅') || trimmedLine.startsWith('⚠️')) {
+                            // Pros and cons
+                            const isPositive = trimmedLine.startsWith('✅');
+                            const bgColor = isPositive ? '#e8f5e8' : '#fff3cd';
+                            const borderColor = isPositive ? '#27ae60' : '#f39c12';
+                            formattedHtml += `
+                                <div style="margin: 8px 0; padding: 10px; background: ${bgColor}; border-radius: 4px; border-left: 3px solid ${borderColor};">
+                                    ${trimmedLine}
+                                </div>
+                            `;
+                        } else if (trimmedLine) {
+                            // Regular content
+                            formattedHtml += `
+                                <div style="margin: 5px 0; padding: 5px 0; line-height: 1.6; color: #2c3e50;">
+                                    ${trimmedLine}
+                                </div>
+                            `;
+                        }
+                    }
+                }
+            }
+            
+            return formattedHtml || `<div style="white-space: pre-line; line-height: 1.6; color: #2c3e50;">${summary}</div>`;
+        }
+
+        function toggleDetailedAnalysis() {
+            const content = document.getElementById('detailedAnalysisContent');
+            const toggle = document.getElementById('detailToggle');
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                toggle.textContent = '▼';
+            } else {
+                content.style.display = 'none';
+                toggle.textContent = '▶';
+            }
+        }
+
+        // Allow Enter key to submit follow-up questions
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('followupQuestion').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    askFollowup();
+                }
+            });
+        });
+    </script>
+    
+    <!-- SEO and Social Meta Tags -->
+    <meta name="description" content="Analyze the impact of ethanol blends (E10, E15, E20) on your vehicle in India. Check compatibility, performance effects, and get maintenance recommendations.">
+    <meta name="keywords" content="ethanol blend, E10, E15, E20, vehicle compatibility, India, fuel efficiency, car maintenance">
+    <meta name="author" content="Ethanol Impact Analyzer">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Ethanol Blend Impact Analyzer - Indian Vehicles">
+    <meta property="og:description" content="Check how ethanol-blended petrol affects your vehicle. Get compatibility analysis and maintenance recommendations.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Ethanol Blend Impact Analyzer">
+    <meta name="twitter:description" content="Analyze ethanol blend effects on Indian vehicles">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚗</text></svg>">
+</body>
+</html>
